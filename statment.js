@@ -28,10 +28,10 @@ function renderPlanText(Idata, plays) {
 }
 
 function htmlStatement(invoice, plays) {
-  return renderHeml(createStatememtData(invoice, plays));
+  return renderHtml(createStatememtData(invoice, plays));
 }
 
-function renderHeml(data) {
+function renderHtml(data) {
   let result = `<h1>청구 내역(고객명: ${Idata.customer})</h1>\n`;
   result += '<table>\n';
   result += '<tr><th>연극</th><th>좌석 수 </th><th>금액</th></tr>';
