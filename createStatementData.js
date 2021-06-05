@@ -1,12 +1,10 @@
-import fs from 'fs';
-const playsStr = fs.readFileSync('./data/plays.json', 'utf-8');
-const invoicesSte = fs.readFileSync('./data/invoices.json', 'utf-8');
-
-const plays = JSON.parse(playsStr);
-const invoice = JSON.parse(invoicesSte);
-
-function statement(invoice, plays) {
-  return renderPlanText(createStatememtData(invoice, plays));
+export default function createStatememtData(invoice, plays) {
+  const result = {};
+  result.customer = invoice.customer;
+  result.performances = invoice.performances.map(enrichPerformance);
+  result.totalAmount = totalAmount(result);
+  result.totalVolumnCredits = totalVolumnCredits(result);
+  return result;
 
   function enrichPerformance(aPerformance) {
     const result = Object.assign({}, aPerformance);
@@ -15,14 +13,7 @@ function statement(invoice, plays) {
     result.volumeCredits = volumnCreditsFor(result);
     return result;
   }
-  function createStatememtData(invoice, plays) {
-    const statementData = {};
-    statementData.customer = invoice.customer;
-    statementData.performances = invoice.performances.map(enrichPerformance);
-    statementData.totalAmount = totalAmount(statementData);
-    statementData.totalVolumnCredits = totalVolumnCredits(statementData);
-    return statementData;
-  }
+
   function playFor(aPerformance) {
     return plays[aPerformance.playID];
   }
@@ -72,25 +63,3 @@ function statement(invoice, plays) {
     return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
   }
 }
-
-function renderPlanText(Idata, plays) {
-  let result = `청구 내역(고객명: ${Idata.customer})\n`;
-  for (let perf of Idata.performances) {
-    result += `  ${perf.play.name}: ${usd(perf.amount)} (${
-      perf.audience
-    } 석)\n`;
-  }
-  result += `총액: ${usd(Idata.totalAmount)}\n`;
-  result += `적립 포인트: ${Idata.totalVolumnCredits} 점\n`;
-  return result;
-}
-
-function usd(aNumber) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(aNumber / 100);
-}
-const res = statement(invoice, plays);
-console.log(res);
