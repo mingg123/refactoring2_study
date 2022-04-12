@@ -45,3 +45,7 @@ function voyageRisk(voyage) {
   if (['중국', '동인도'].includes(voyage.zone)) result += 4;
   return Math.max(result, 0);
 }
+
+function captainHistoryRisk(voyage, history) {
+  let result = 1;
+}
